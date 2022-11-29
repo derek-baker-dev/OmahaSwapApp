@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class GetBooksByAuthor extends HttpServlet {
     private static final long serialVersionUID = 1 ;
 
-    String dns = "ec2-54-158-104-42.compute-1.amazonaws.com";
+    String dns = "ec2-18-234-166-62.compute-1.amazonaws.com";
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,7 +41,7 @@ public class GetBooksByAuthor extends HttpServlet {
         PreparedStatement statement1 = null;
         ResultSet rs = null;
         PreparedStatement preparedStatement = null;
-        String author = request.getParameter("authorName");
+        String keyword = request.getParameter("authorName");
         response.setContentType("text/html");
 
         PrintWriter out = response.getWriter();
@@ -65,7 +65,7 @@ public class GetBooksByAuthor extends HttpServlet {
         }
 
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://" + dns + ":3306/myDB", "root", "adminStuff");
+            connection = DriverManager.getConnection("jdbc:mysql://" + dns + ":3306/mysql", "matt", "password");
         } catch (SQLException e2) {
             // TODO Auto-generated catch block
             System.out.println("Connection Failed!:\n" + e2.getMessage());
@@ -73,11 +73,11 @@ public class GetBooksByAuthor extends HttpServlet {
         System.out.println("SUCCESS!!!! You made it, take control     your database now!");
         System.out.println("Creating statement...");
 
-        sql = "SELECT * FROM assign4 WHERE Author=?";
+        sql = "SELECT * FROM product WHERE product_name=?";
         try {
 
             statement1 = connection.prepareStatement(sql);
-            String theAuthor = author;
+            String theAuthor = keyword;
             statement1.setString(1, theAuthor);
      
         } catch (SQLException e2) {
@@ -93,16 +93,18 @@ public class GetBooksByAuthor extends HttpServlet {
             e1.printStackTrace();
         }
         out.println("<table border=1 width=50% height=10%>");
-        out.println("<tr><th>Book Title</th><th>Author</th><th>Genre</th><th>ISBN</th><th>Summary</th>");
+        out.println("<tr><th>Book Title</th><th>Author</th><th>Genre</th><th>ISBN</th><th>Summary</th><th>Poster Name</th>");
         try {
             while (rs.next()) {
                 //Retrieve by column name
-                String bookTitle = rs.getString("Title");
-                String authorVal = rs.getString("Author");
-                String genre = rs.getString("Genre");
-                String isbn = rs.getString("ISBN");
-                String summary = rs.getString("Summary");
-                out.println("<tr><td>" + bookTitle + "</td><td>" + authorVal + "</td><td>" + genre + "</td><td>" + isbn + "</td><td>" + summary + "</td></tr>");
+                String bookTitle = rs.getString("product_name");
+                String authorVal = rs.getString("posting_date");
+                String genre = rs.getString("product_desc");
+                String isbn = rs.getString("product_image");
+                String summary = rs.getString("poster_contact");
+                String name = rs.getString("poster_name");
+                out.println("<tr><td>" + bookTitle + "</td><td>" + authorVal + "</td><td>" + genre + "</td><td>" + isbn + "</td><td>" 
+                + summary + "</td><td>" + name + "</td></tr>");
             }
             out.println("</body></html>");
         } catch (SQLException e) {
